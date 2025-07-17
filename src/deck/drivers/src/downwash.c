@@ -19,7 +19,7 @@
 #include "static_mem.h"
 
 #include "downwash.h"
-#include "dlhr-l01d-e1bd.h"
+#include "dlhr-f50d-e1bd.h"
 #include "i2cdev.h"
 #include "cf_math.h"
 
@@ -37,9 +37,9 @@ void downwashDeckInit(DeckInfo* info) {
         return;
     }
 
-    const bool sensor_init_res = dlhrL01dE1bdInit(I2C1_DEV);
+    const bool sensor_init_res = dlhrF50dE1bdInit(I2C1_DEV);
     if (!sensor_init_res) {
-        DEBUG_PRINT("Failed to initialize the DLHR-L01D-E1BD sensor.\n");
+        DEBUG_PRINT("Failed to initialize the DLHR-F50D-E1BD sensor.\n");
         return;
     }
 
@@ -55,7 +55,7 @@ bool downwashDeckTest(void) {
     if (!isInit) {
         return false;
     }
-    // sensor_status = dlhrL01dE1bdGetStatus();
+    // sensor_status = dlhrF50dE1bdGetStatus();
     // DEBUG_PRINT("Sensor status during check: %d\n", sensor_status);
     // return !dlhrL01dE1bdCheckError(sensor_status);
     return true;
@@ -70,18 +70,18 @@ void downwashDeckTask(void* arg) {
     while(1) {
         vTaskDelayUntil(&lastWakeTime, M2T(10));
         // DEBUG_PRINT("Sensor status: %d\n", dlhrL01dE1bdGetStatus());
-        const bool start_result = dlhrL01dE1bdStartSingleMeasurement();
+        const bool start_result = dlhrF50dE1bdStartSingleMeasurement();
         if(!start_result) {
             DEBUG_PRINT("Failed to start single measurement.\n");
             continue;
         }
-        bool valid_data_available = dlhrL01dE1bdIsSensorReady();
+        bool valid_data_available = dlhrF50dE1bdIsSensorReady();
         while (!valid_data_available) {
-            valid_data_available = dlhrL01dE1bdIsSensorReady();
+            valid_data_available = dlhrF50dE1bdIsSensorReady();
         };
         // DEBUG_PRINT("Sensor is ready.\n");
         dlhr_sensor_data_t sensor_data;
-        const bool received_data = dlhrL01dE1bdReadSensorData(&sensor_data);
+        const bool received_data = dlhrF50dE1bdReadSensorData(&sensor_data);
         if (!received_data) {
             DEBUG_PRINT("Failed to read sensor data.\n");
             continue;
